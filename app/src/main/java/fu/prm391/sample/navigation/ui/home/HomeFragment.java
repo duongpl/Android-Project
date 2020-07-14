@@ -1,6 +1,8 @@
 package fu.prm391.sample.navigation.ui.home;
 
+import android.graphics.Picture;
 import android.graphics.drawable.Drawable;
+import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -22,6 +24,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -30,14 +34,12 @@ import fu.prm391.sample.navigation.model.Category;
 
 public class HomeFragment extends Fragment {
 
-    private HomeViewModel homeViewModel;
     private Category c;
     private ArrayList<Category> list = new ArrayList<>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        final TextView textView = root.findViewById(R.id.text_home);
         final ImageView imgview = root.findViewById(R.id.imageView2);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -56,12 +58,14 @@ public class HomeFragment extends Fragment {
                                 list.add(c);
                             }
                         }
-                        textView.setText(String.valueOf(list.size()));
                         StorageReference imgre = storageRef.child(list.get(0).getImg());
                         imgre.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
-                                imgview.setImageURI(uri);
+                                Picasso.with(getContext()).setLoggingEnabled(true);
+                                Picasso.with(getContext()).load(uri).into(imgview);
+                                Toast.makeText(getContext(),uri.toString(),Toast.LENGTH_SHORT).show();
+
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
