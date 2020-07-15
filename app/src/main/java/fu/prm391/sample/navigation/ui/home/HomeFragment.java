@@ -21,24 +21,21 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 import fu.prm391.sample.navigation.R;
 import fu.prm391.sample.navigation.adapter.FoodAdapter;
-import fu.prm391.sample.navigation.model.Category;
 import fu.prm391.sample.navigation.model.Food;
 
 public class HomeFragment extends Fragment {
-    String img_temp = "";
     private ArrayList<Food> foods;
     private RecyclerView RecyclerFood;
     private FoodAdapter foodAdapter;
-    private ArrayList<Category> list = new ArrayList<>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        foods = new ArrayList<>();
         final View root = inflater.inflate(R.layout.fragment_home, container, false);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -55,20 +52,20 @@ public class HomeFragment extends Fragment {
                                 c.setId(docu.getId());
                                 c.setName(docu.get("name").toString());
                                 c.setCategory_type(docu.get("category_type").toString());
+                                c.setImg(docu.get("img").toString());
                                 StorageReference imgre = folderr.child(docu.get("img").toString());
                                 imgre.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                     @Override
                                     public void onSuccess(Uri uri) {
                                         c.setImg(uri.toString());
-                                        foods.add(c);
-                                        Toast.makeText(getContext(), img_temp, Toast.LENGTH_LONG).show();
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception exception) {
-                                        Toast.makeText(getContext(), "Failed", Toast.LENGTH_LONG).show();
+                                        //
                                     }
                                 });
+                                foods.add(c);
                             }
                             RecyclerFood = root.findViewById(R.id.recyclerviewhome);
                             foodAdapter = new FoodAdapter(getContext(), foods);
