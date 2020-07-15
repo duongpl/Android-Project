@@ -52,9 +52,8 @@ public class HomeFragment extends Fragment {
                                 c.setId(docu.getId());
                                 c.setName(docu.get("name").toString());
                                 c.setCategory_type(docu.get("category_type").toString());
-                                c.setImg(docu.get("img").toString());
-                                StorageReference imgre = folderr.child(docu.get("img").toString());
-                                imgre.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                String im = "food/"+docu.get("img").toString();
+                                storageRef.child(im).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                     @Override
                                     public void onSuccess(Uri uri) {
                                         c.setImg(uri.toString());
@@ -68,12 +67,11 @@ public class HomeFragment extends Fragment {
                                 foods.add(c);
                             }
                             RecyclerFood = root.findViewById(R.id.recyclerviewhome);
+                            RecyclerFood.setHasFixedSize(true);
                             foodAdapter = new FoodAdapter(getContext(), foods);
                             RecyclerFood.setAdapter(foodAdapter);
                             RecyclerFood.setLayoutManager(new GridLayoutManager(getContext(), 2));
                         }
-
-
                     }
                 });
         return root;

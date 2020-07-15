@@ -52,9 +52,14 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.ViewHolder>{
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Food f = food.get(position);
-        Picasso.get()
+        Glide.with(context)
                 .load(f.getImg())
+                .fitCenter()
                 .into(holder.img_food);
+//        Picasso.get()
+//                .load(f.getImg())
+//                .fit()
+//                .into(holder.img_food);
         holder.name_food.setText(f.getName());
     }
 
