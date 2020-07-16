@@ -53,7 +53,7 @@ public class HomeFragment extends Fragment {
                                 c.setName(docu.get("name").toString());
                                 c.setCategory_type(docu.get("category_type").toString());
                                 String im = "food/"+docu.get("img").toString();
-                                storageRef.child(im).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                folderr.child(docu.get("img").toString()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                     @Override
                                     public void onSuccess(Uri uri) {
                                         c.setImg(uri.toString());
