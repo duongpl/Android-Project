@@ -62,6 +62,12 @@ public class CategoryFragment extends Fragment {
                                     @Override
                                     public void onSuccess(Uri uri) {
                                         c.setImg(uri.toString());
+                                        categories.add(c);
+                                        RecyclerCategory = root.findViewById(R.id.recyclerviewcategory);
+                                        RecyclerCategory.setHasFixedSize(true);
+                                        categoryAdapter = new CategoryAdapter(getContext(), categories);
+                                        RecyclerCategory.setAdapter(categoryAdapter);
+                                        RecyclerCategory.setLayoutManager(new LinearLayoutManager(getContext()));
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
@@ -69,15 +75,11 @@ public class CategoryFragment extends Fragment {
                                         //
                                     }
                                 });
-                                categories.add(c);
+
                             }
-                            RecyclerCategory = root.findViewById(R.id.recyclerviewcategory);
-                            RecyclerCategory.setHasFixedSize(true);
-                            categoryAdapter = new CategoryAdapter(getContext(), categories);
-                            RecyclerCategory.setAdapter(categoryAdapter);
-                            RecyclerCategory.setLayoutManager(new LinearLayoutManager(getContext()));
+
                         }
-                    }
+               }
                 });
         return root;
     }

@@ -57,6 +57,12 @@ public class HomeFragment extends Fragment {
                                     @Override
                                     public void onSuccess(Uri uri) {
                                         c.setImg(uri.toString());
+                                        foods.add(c);
+                                        RecyclerFood = root.findViewById(R.id.recyclerviewhome);
+                                        RecyclerFood.setHasFixedSize(true);
+                                        foodAdapter = new FoodAdapter(getContext(), foods);
+                                        RecyclerFood.setAdapter(foodAdapter);
+                                        RecyclerFood.setLayoutManager(new GridLayoutManager(getContext(), 2));
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
@@ -64,13 +70,7 @@ public class HomeFragment extends Fragment {
                                         //
                                     }
                                 });
-                                foods.add(c);
                             }
-                            RecyclerFood = root.findViewById(R.id.recyclerviewhome);
-                            RecyclerFood.setHasFixedSize(true);
-                            foodAdapter = new FoodAdapter(getContext(), foods);
-                            RecyclerFood.setAdapter(foodAdapter);
-                            RecyclerFood.setLayoutManager(new GridLayoutManager(getContext(), 2));
                         }
                     }
                 });
