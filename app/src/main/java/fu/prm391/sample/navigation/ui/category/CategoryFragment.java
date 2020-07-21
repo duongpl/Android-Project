@@ -1,5 +1,6 @@
 package fu.prm391.sample.navigation.ui.category;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -34,7 +35,11 @@ import fu.prm391.sample.navigation.adapter.FoodAdapter;
 import fu.prm391.sample.navigation.model.Category;
 import fu.prm391.sample.navigation.model.Food;
 
-public class CategoryFragment extends Fragment {
+public class CategoryFragment extends Fragment implements CategoryAdapter.customdetailListener {
+
+    public static int REQ = 100;
+    public static int RES = 200;
+
     private ArrayList<Category> categories;
     private RecyclerView RecyclerCategory;
     private CategoryAdapter categoryAdapter;
@@ -66,6 +71,7 @@ public class CategoryFragment extends Fragment {
                                         RecyclerCategory = root.findViewById(R.id.recyclerviewcategory);
                                         RecyclerCategory.setHasFixedSize(true);
                                         categoryAdapter = new CategoryAdapter(getContext(), categories);
+                                        categoryAdapter.setCustomdetailListner(CategoryFragment.this);
                                         RecyclerCategory.setAdapter(categoryAdapter);
                                         RecyclerCategory.setLayoutManager(new LinearLayoutManager(getContext()));
                                     }
@@ -82,5 +88,12 @@ public class CategoryFragment extends Fragment {
                }
                 });
         return root;
+    }
+
+    @Override
+    public void onDetailClickListner(int position, Category f) {
+        Intent i = new Intent(getContext(),FoodByCate.class);
+        i.putExtra("model",f);
+        startActivityForResult(i,REQ);
     }
 }
