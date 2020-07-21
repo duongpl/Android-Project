@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 
 import fu.prm391.sample.navigation.R;
 import fu.prm391.sample.navigation.model.Category;
+import fu.prm391.sample.navigation.model.Food;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder>{
     private Context context;
@@ -27,13 +29,16 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        private TextView id;
         private ImageView img_category;
         private TextView name_category;
-
+        private LinearLayout layout;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            id = itemView.findViewById(R.id.id);
             img_category = itemView.findViewById(R.id.image);
             name_category = itemView.findViewById(R.id.text_name);
+            layout = itemView.findViewById(R.id.item_food);
         }
     }
 
@@ -47,8 +52,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CategoryAdapter.ViewHolder holder, int position) {
-        Category f = category.get(position);
+    public void onBindViewHolder(@NonNull CategoryAdapter.ViewHolder holder, final int position) {
+        final Category f = category.get(position);
+        holder.id.setText(f.getId());
         Glide.with(context)
                 .load(f.getImg())
                 .fitCenter()
@@ -58,10 +64,29 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 //                .fit()
 //                .into(holder.img_food);
         holder.name_category.setText(f.getName());
+        holder.layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (detailListner != null) {
+                    detailListner.onDetailClickListner(position,f);
+                }
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return category.size();
     }
+
+    customdetailListener detailListner;
+
+    public interface customdetailListener {
+        public void onDetailClickListner(int position, Category f);
+    }
+
+    public void setCustomdetailListner(customdetailListener listener) {
+        this.detailListner = listener;
+    }
+
 }

@@ -8,11 +8,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import fu.prm391.sample.navigation.R;
 
-public class Category {
+public class Category implements Serializable {
     private String id;
     private String name;
     private String img;
