@@ -59,6 +59,8 @@ public class FoodByCate extends AppCompatActivity implements FoodAdapter.customd
                                 c.setId(docu.getId());
                                 c.setName(docu.get("name").toString());
                                 c.setCategory_type(docu.get("category_type").toString());
+                                String builder = docu.get("step").toString().replaceAll("Bước","\n\nBước");
+                                c.setStep(builder);
                                 String im = "food/"+docu.get("img").toString();
                                 folderr.child(docu.get("img").toString()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                     @Override

@@ -6,15 +6,25 @@ public class Food implements Serializable {
     private String id;
     private String name;
     private String img;
+    private String step;
     private String category_type;
 
     public Food(){}
 
-    public Food(String id, String name, String img, String category_type) {
+    public Food(String id, String name, String img, String category_type,String step) {
         this.id = id;
         this.name = name;
         this.img = img;
         this.category_type = category_type;
+        this.step = step;
+    }
+
+    public String getStep() {
+        return step;
+    }
+
+    public void setStep(String step) {
+        this.step = step;
     }
 
     public String getId() {
