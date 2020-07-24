@@ -57,7 +57,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         holder.id.setText(f.getId());
         Glide.with(context)
                 .load(f.getImg())
-                .fitCenter()
+
                 .into(holder.img_category);
 //        Picasso.get()
 //                .load(f.getImg())
