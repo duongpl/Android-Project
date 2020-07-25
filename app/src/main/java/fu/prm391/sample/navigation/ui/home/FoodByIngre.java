@@ -8,15 +8,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Toast;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -27,68 +26,72 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
-import fu.prm391.sample.navigation.MainActivity;
-import fu.prm391.sample.navigation.R;
+import fu.prm391.sample.navigation.adapter.FoodAdapter;
+import fu.prm391.sample.navigation.adapter.FoodByIngreAdapter;
 import fu.prm391.sample.navigation.adapter.IngreAdapter;
+import fu.prm391.sample.navigation.model.Food;
+import fu.prm391.sample.navigation.R;
 import fu.prm391.sample.navigation.model.ingredients;
 
-public class Ingredients extends AppCompatActivity implements IngreAdapter.customdetailListener{
-    private ArrayList<ingredients> ingredients;
-    private RecyclerView RecyclerIngre;
-    private IngreAdapter ingreAdapter;
-    private String id;
+public class FoodByIngre extends AppCompatActivity implements FoodByIngreAdapter.customdetailListener {
+    private ArrayList<Food> foods;
+    private RecyclerView RecyclerFood;
+    private FoodByIngreAdapter foodAdapter;
+    private ImageView img;
+    private TextView tv;
     public static int REQ = 100;
     public static int RES = 200;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ingredients);
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(Ingredients.this, MainActivity.class);
-                startActivity(i);
-            }
-        });
-        ingredients = new ArrayList<>();
-        final Intent i = getIntent();
-        id = i .getStringExtra("id");
+        setContentView(R.layout.activity_food_by_ingre);
+        foods = new ArrayList<>();
+        Intent i = getIntent();
+        ingredients ingre  = (ingredients) i.getSerializableExtra("model");
+        tv = findViewById(R.id.repice);
+        img = findViewById(R.id.img);
+        Glide.with(this)
+                .load(ingre.getImg())
+                .fitCenter()
+                .into(img);
+        tv.setText(String.format("Các món ăn với %s",ingre.getName()));
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        final FirebaseFirestore ingre = FirebaseFirestore.getInstance();
+        final FirebaseFirestore f = FirebaseFirestore.getInstance();
         FirebaseStorage storage = FirebaseStorage.getInstance();
         final StorageReference storageRef = storage.getReference();
-        final StorageReference folderr = storageRef.child("ingredient");
+        final StorageReference folderr = storageRef.child("food");
         db.collection("foodingre")
-                .whereEqualTo("foodid",id)
+                .whereEqualTo("ingreid",ingre.getId())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot docu : task.getResult()) {
-                                final ingredients i = new ingredients();
-                                i.setAmount(docu.get("amount").toString());
-                                DocumentReference docRef = ingre.collection("ingredients").document(docu.get("ingreid").toString());
+                                final Food fo = new Food();
+                                DocumentReference docRef = f.collection("food").document(docu.get("foodid").toString());
                                 docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                     @Override
                                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                         if (task.isSuccessful()) {
                                             DocumentSnapshot document = task.getResult();
                                             if (document.exists()) {
-                                                i.setId(document.getId());
-                                                i.setName(document.get("name").toString());
+                                                fo.setId(document.getId());
+                                                fo.setName(document.get("name").toString());
+                                                fo.setCategory_type(document.get("category_type").toString());
+                                                String builder = document.get("step").toString().replaceAll("Bước","\n\nBước");
+                                                fo.setStep(builder);
                                                 folderr.child(document.get("img").toString()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                                     @Override
                                                     public void onSuccess(Uri uri) {
-                                                        i.setImg(uri.toString());
-                                                        ingredients.add(i);
-                                                        RecyclerIngre = findViewById(R.id.recyclerIngre);
-                                                        RecyclerIngre.setHasFixedSize(true);
-                                                        ingreAdapter = new IngreAdapter(Ingredients.this, ingredients);
-                                                        ingreAdapter.setCustomdetailListner(Ingredients.this);
-                                                        RecyclerIngre.setAdapter(ingreAdapter);
-                                                        RecyclerIngre.setLayoutManager(new GridLayoutManager(Ingredients.this, 3));
+                                                        fo.setImg(uri.toString());
+                                                        foods.add(fo);
+                                                        RecyclerFood = findViewById(R.id.recyclerfoodbyrepice);
+                                                        RecyclerFood.setHasFixedSize(true);
+                                                        foodAdapter = new FoodByIngreAdapter(FoodByIngre.this, foods);
+                                                        foodAdapter.setCustomdetailListner(FoodByIngre.this);
+                                                        RecyclerFood.setAdapter(foodAdapter);
+                                                        RecyclerFood.setLayoutManager(new GridLayoutManager(FoodByIngre.this, 2));
                                                     }
                                                 }).addOnFailureListener(new OnFailureListener() {
                                                     @Override
@@ -108,8 +111,8 @@ public class Ingredients extends AppCompatActivity implements IngreAdapter.custo
     }
 
     @Override
-    public void onDetailClickListner(int position, fu.prm391.sample.navigation.model.ingredients f) {
-        Intent i = new Intent(this, FoodByIngre.class);
+    public void onDetailClickListner(int position, Food f) {
+        Intent i = new Intent(this, DetailFood.class);
         i.putExtra("model",f);
         startActivityForResult(i,REQ);
     }

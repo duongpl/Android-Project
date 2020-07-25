@@ -16,9 +16,9 @@
             android:id="@+id/nav_wishlist"
             android:icon="@drawable/ic_wishlist"
             android:title="@string/menu_slideshow" />
-        <item
-            android:id="@+id/nav_mealday"
-            android:icon="@drawable/ic_mealday"
-            android:title="@string/menu_mealofday" />
+<!--        <item-->
+<!--            android:id="@+id/nav_mealday"-->
+<!--            android:icon="@drawable/ic_mealday"-->
+<!--            android:title="@string/menu_mealofday" />-->
     </group>
 </menu>
