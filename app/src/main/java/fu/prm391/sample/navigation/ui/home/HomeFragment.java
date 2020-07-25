@@ -1,8 +1,13 @@
 package fu.prm391.sample.navigation.ui.home;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,6 +30,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import fu.prm391.sample.navigation.R;
@@ -34,6 +42,9 @@ public class HomeFragment extends Fragment implements FoodAdapter.customdetailLi
     private ArrayList<Food> foods;
     private RecyclerView RecyclerFood;
     private FoodAdapter foodAdapter;
+    private String fileName = "wishlist.txt";
+    private String filePath = "/FoodRepice";
+    private File myExternalFile;
     public static int REQ = 100;
     public static int RES = 200;
 
@@ -41,6 +52,21 @@ public class HomeFragment extends Fragment implements FoodAdapter.customdetailLi
                              ViewGroup container, Bundle savedInstanceState) {
         foods = new ArrayList<>();
         final View root = inflater.inflate(R.layout.fragment_home, container, false);
+
+        File pathFile = new File(Environment.getExternalStorageDirectory()
+                + filePath);
+        if (!pathFile.exists()) {
+            pathFile.mkdirs();
+        }
+        isStoragePermissionGranted();
+        myExternalFile = new File(pathFile, fileName);
+        if(!myExternalFile.exists()) {
+            try {
+                myExternalFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseStorage storage = FirebaseStorage.getInstance();
         final StorageReference storageRef = storage.getReference();
@@ -89,5 +115,21 @@ public class HomeFragment extends Fragment implements FoodAdapter.customdetailLi
         Intent i = new Intent(getContext(), DetailFood.class);
         i.putExtra("model",f);
         startActivityForResult(i,REQ);
+    }
+
+    public void isStoragePermissionGranted() {
+        String TAG = "Storage Permission";
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (getActivity().checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Log.v(TAG, "Permission is granted");
+            } else {
+                Log.v(TAG, "Permission is revoked");
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_CONTACTS}, 1);
+            }
+        } else { //permission is automatically granted on sdk<23 upon installation
+            Log.v(TAG, "Permission is granted");
+        }
     }
 }
